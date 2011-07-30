@@ -7,11 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
+import java.util.Scanner;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
-
+import java.io.*;
 
 
 
@@ -68,8 +69,11 @@ public class LogViewer extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				if(dialog == null)
 					dialog = new OpendDialog();
-				if(dialog.showDialog(LogViewer.this))
-					addTextArea(panel);
+				if(dialog.showDialog(LogViewer.this)){
+					File file = new File(dialog.getFileName());
+					if(file.exists())
+						addTextArea(panel, file);
+				}
 			}
 		});
 		
@@ -77,7 +81,7 @@ public class LogViewer extends JFrame {
 		return panel;
 	}
 	
-	private void addTextArea(JPanel panel){
+	private void addTextArea(JPanel panel, File file){
 	
 		JSplitPane parent = (JSplitPane)panel.getParent();
 		int order = parent.getComponentZOrder(panel);
@@ -86,6 +90,7 @@ public class LogViewer extends JFrame {
 		JTextArea text = new JTextArea();
 		text.setBackground(Color.black);
 		text.setCaretColor(Color.white);
+		text.setForeground(Color.white);
 		final JPopupMenu menu = new JPopupMenu();
 		JMenuItem vertical = new JMenuItem("Split vertical");
 		vertical.addActionListener(new SplitListener(text, JSplitPane.VERTICAL_SPLIT));
@@ -95,6 +100,9 @@ public class LogViewer extends JFrame {
 		menu.add(horizontal);
 		text.setComponentPopupMenu(menu);
 		
+		Runnable thread = new TextAreaThread(text, file);
+		Thread t = new Thread(thread);
+		t.start();
 		parent.add(text);
 		parent.setComponentZOrder(text, order);
 		parent.setDividerLocation(divider);
