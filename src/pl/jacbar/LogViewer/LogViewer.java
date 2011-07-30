@@ -33,6 +33,8 @@ public class LogViewer extends JFrame {
 	}
 
 	
+	private OpendDialog dialog = null;
+	
 	public LogViewer(){
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("LogViewer");
@@ -64,7 +66,10 @@ public class LogViewer extends JFrame {
 		panel.setLayout(new GridBagLayout());
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				addTextArea(panel);
+				if(dialog == null)
+					dialog = new OpendDialog();
+				if(dialog.showDialog(LogViewer.this))
+					addTextArea(panel);
 			}
 		});
 		
@@ -80,7 +85,7 @@ public class LogViewer extends JFrame {
 		parent.remove(panel);
 		JTextArea text = new JTextArea();
 		text.setBackground(Color.black);
-		
+		text.setCaretColor(Color.white);
 		final JPopupMenu menu = new JPopupMenu();
 		JMenuItem vertical = new JMenuItem("Split vertical");
 		vertical.addActionListener(new SplitListener(text, JSplitPane.VERTICAL_SPLIT));
