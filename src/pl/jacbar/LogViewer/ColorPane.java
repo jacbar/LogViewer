@@ -2,6 +2,7 @@ package pl.jacbar.LogViewer;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.Color;
+import java.awt.Font;
 
 public class ColorPane extends JTextPane {
   static final Color D_Black = Color.getHSBColor(new Float(0.00),new Float(0.00),new Float(0.00));
@@ -24,10 +25,14 @@ public class ColorPane extends JTextPane {
   static Color colorCurrent = cReset;
   String remaining = "";
   private Boolean wordWrap;
+  private int limit;
   
   public ColorPane() {
 	super();
+	setEditable(false);
+	
 	wordWrap = true;
+	limit = 500;
   }
   
   public boolean getScrollableTracksViewportWidth(){
@@ -36,6 +41,10 @@ public class ColorPane extends JTextPane {
   
   public void setWordWrap(){
 	  wordWrap = true;
+  }
+  
+  public Boolean getWordWrap(){
+	  return wordWrap;
   }
   
   public void disableWordWrap(){
@@ -59,7 +68,8 @@ public class ColorPane extends JTextPane {
     boolean stillSearching = true; // true until no more Escape sequences
     String addString = remaining + s;
     remaining = "";
-
+    
+    
     if (addString.length() > 0) {
       aIndex = addString.indexOf("\u001B"); // find first escape
       if (aIndex == -1) { // no escape/color change in this string, so just send it with current color
