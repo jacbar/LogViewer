@@ -72,7 +72,7 @@ public class LogViewer extends JFrame {
 				if(dialog.showDialog(LogViewer.this)){
 					File file = new File(dialog.getFileName());
 					if(file.exists())
-						addTextArea(panel, file);
+						addColorPane(panel, file);
 				}
 			}
 		});
@@ -81,30 +81,33 @@ public class LogViewer extends JFrame {
 		return panel;
 	}
 	
-	private void addTextArea(JPanel panel, File file){
+	private void addColorPane(JPanel panel, File file){
 	
 		JSplitPane parent = (JSplitPane)panel.getParent();
 		int order = parent.getComponentZOrder(panel);
 		int divider = parent.getDividerLocation();
 		parent.remove(panel);
-		JTextArea text = new JTextArea();
-		text.setBackground(Color.black);
-		text.setCaretColor(Color.white);
-		text.setForeground(Color.white);
+		ColorPane pane = new ColorPane();
+		pane.setBackground(Color.black);
+		
 		final JPopupMenu menu = new JPopupMenu();
+		JScrollPane scrollPane = new JScrollPane(pane);
 		JMenuItem vertical = new JMenuItem("Split vertical");
-		vertical.addActionListener(new SplitListener(text, JSplitPane.VERTICAL_SPLIT));
+		vertical.addActionListener(new SplitListener(scrollPane, JSplitPane.VERTICAL_SPLIT));
 		JMenuItem horizontal = new JMenuItem("Split Horizontal");
-		horizontal.addActionListener(new SplitListener(text, JSplitPane.HORIZONTAL_SPLIT));
+		horizontal.addActionListener(new SplitListener(scrollPane, JSplitPane.HORIZONTAL_SPLIT));
 		menu.add(vertical);
 		menu.add(horizontal);
-		text.setComponentPopupMenu(menu);
+		pane.setComponentPopupMenu(menu);
 		
-		Runnable thread = new TextAreaThread(text, file);
+		TextPaneThread thread = new TextPaneThread(pane, file);
 		Thread t = new Thread(thread);
 		t.start();
-		parent.add(text);
-		parent.setComponentZOrder(text, order);
+		
+		
+		
+		parent.add(scrollPane);
+		parent.setComponentZOrder(scrollPane, order);
 		parent.setDividerLocation(divider);
 		
 		
@@ -113,7 +116,7 @@ public class LogViewer extends JFrame {
 	
 	private class SplitListener implements ActionListener{
 		private JPanel panel = null;
-		private JTextArea text = null;
+		private JScrollPane pane = null;
 		int split;
 		SplitedElement mode;
 		
@@ -124,25 +127,25 @@ public class LogViewer extends JFrame {
 		
 		}
 		
-		SplitListener(JTextArea text, int split){
-			this.text = text;
+		SplitListener(JScrollPane pane, int split){
+			this.pane = pane;
 			this.split = split;
-			this.mode = SplitedElement.TEXTAREA;
+			this.mode = SplitedElement.COLORPANE;
 		}
 		
 		public void actionPerformed(ActionEvent e) {
 			
-			JSplitPane parent = (JSplitPane) (mode == SplitedElement.PANEL ? panel.getParent(): text.getParent());
+			JSplitPane parent = (JSplitPane) (mode == SplitedElement.PANEL ? panel.getParent(): this.pane.getParent());
 			final JSplitPane pane = new JSplitPane(split);
 			int parentDivider = parent.getDividerLocation();
-			int order = parent.getComponentZOrder((mode == SplitedElement.PANEL ? panel : text));
+			int order = parent.getComponentZOrder((mode == SplitedElement.PANEL ? panel : this.pane));
 					
 			
 			pane.setDividerSize(4);
 			pane.setBorder(null);
-			pane.setDividerLocation(split== 0 ? (mode == SplitedElement.PANEL ? panel.getHeight()/2 : text.getHeight()/2) : (mode == SplitedElement.PANEL ? panel.getWidth()/2 : text.getWidth()/2));
+			pane.setDividerLocation(split== 0 ? (mode == SplitedElement.PANEL ? panel.getHeight()/2 : this.pane.getHeight()/2) : (mode == SplitedElement.PANEL ? panel.getWidth()/2 : this.pane.getWidth()/2));
 			pane.setResizeWeight(0.5);
-			pane.setLeftComponent((mode == SplitedElement.PANEL ? panel : text));
+			pane.setLeftComponent((mode == SplitedElement.PANEL ? panel : this.pane));
 			pane.setRightComponent(addPanel());
 			BasicSplitPaneUI splitPaneUI = (BasicSplitPaneUI)(pane.getUI());
 			splitPaneUI.getDivider().addMouseListener(new MergeListener(pane));
