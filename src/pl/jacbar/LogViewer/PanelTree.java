@@ -8,7 +8,7 @@ public class PanelTree {
 	PanelTree rightSon = null;
 	
 	public PanelTree() {
-		parent = new ChoosePanel();
+		this.parent = new ChoosePanel();
 	}
 	
 	public PanelTree(JPanel parent){
