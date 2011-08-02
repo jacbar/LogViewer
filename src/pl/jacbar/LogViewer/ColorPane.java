@@ -42,6 +42,7 @@ public class ColorPane extends JTextPane {
   
   public void setWordWrap(){
 	  wordWrap = true;
+	  rewrite();
   }
   
   public Boolean getWordWrap(){
@@ -50,6 +51,12 @@ public class ColorPane extends JTextPane {
   
   public void disableWordWrap(){
 	  wordWrap = false;
+	  rewrite();
+  }
+  
+  public void rewrite(){
+	  String text = getText();
+	  appendANSI(text);
   }
   
   public void append(Color c, String s) {
@@ -74,7 +81,8 @@ public class ColorPane extends JTextPane {
     	limit++;
     else{
     	try {
-    		getDocument().remove(0, getText().indexOf("\n"));
+    		Element element = getDocument().getDefaultRootElement().getElement(0);
+    		getDocument().remove(element.getStartOffset(),element.getEndOffset());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
