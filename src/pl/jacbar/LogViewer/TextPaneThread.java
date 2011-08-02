@@ -2,7 +2,7 @@ package pl.jacbar.LogViewer;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.*;
+
 
 public class TextPaneThread implements Runnable {
 	
@@ -14,16 +14,16 @@ public class TextPaneThread implements Runnable {
 	public TextPaneThread(ColorPane pane, File file) {
 		this.pane = pane;
 		this.file = file;
+		
+		
+	}
+	
+	public void run() {	
 		try{
 			reader = new BufferedReader(new FileReader(file));
 		}catch(FileNotFoundException e){
 			JOptionPane.showMessageDialog(null,"Wrong file or file doesn't exist","Error",JOptionPane.ERROR_MESSAGE);
 		}
-		
-	}
-	
-	public void run() {	
-		
 		while(!kill){
 			String line;
 			try {

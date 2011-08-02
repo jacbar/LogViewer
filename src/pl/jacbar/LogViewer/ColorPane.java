@@ -1,8 +1,9 @@
 package pl.jacbar.LogViewer;
 import javax.swing.*;
 import javax.swing.text.*;
+
 import java.awt.Color;
-import java.awt.Font;
+
 
 public class ColorPane extends JTextPane {
   static final Color D_Black = Color.getHSBColor(new Float(0.00),new Float(0.00),new Float(0.00));
@@ -24,15 +25,15 @@ public class ColorPane extends JTextPane {
   static final Color cReset = Color.getHSBColor(new Float(0.000),new Float(0.000),new Float(1.000));
   static Color colorCurrent = cReset;
   String remaining = "";
+  
   private Boolean wordWrap;
   private int limit;
   
   public ColorPane() {
 	super();
-	setEditable(false);
-	
+	setBackground(Color.black);
 	wordWrap = true;
-	limit = 500;
+	limit = 0;
   }
   
   public boolean getScrollableTracksViewportWidth(){
@@ -60,7 +61,7 @@ public class ColorPane extends JTextPane {
     replaceSelection(s); // there is no selection, so inserts at caret
   }
 
-  public void appendANSI(String s) { // convert ANSI color codes first
+  public void appendANSI(String s)  { // convert ANSI color codes first
     int aPos = 0;   // current char position in addString
     int aIndex = 0; // index of next Escape sequence
     int mIndex = 0; // index of "m" terminating Escape sequence
@@ -69,6 +70,16 @@ public class ColorPane extends JTextPane {
     String addString = remaining + s;
     remaining = "";
     
+    if(limit <= 500)
+    	limit++;
+    else{
+    	try {
+    		getDocument().remove(0, getText().indexOf("\n"));
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+    }
+    	
     
     if (addString.length() > 0) {
       aIndex = addString.indexOf("\u001B"); // find first escape

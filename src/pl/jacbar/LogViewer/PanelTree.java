@@ -3,7 +3,7 @@ package pl.jacbar.LogViewer;
 import javax.swing.JPanel;
 
 public class PanelTree {
-	JPanel parent = null;
+	SplitPanel parent = null;
 	PanelTree leftSon = null;
 	PanelTree rightSon = null;
 	
@@ -11,7 +11,7 @@ public class PanelTree {
 		this.parent = new ChoosePanel();
 	}
 	
-	public PanelTree(JPanel parent){
+	public PanelTree(SplitPanel parent){
 		this.parent = parent;
 	}
 	
@@ -23,13 +23,25 @@ public class PanelTree {
 		this.rightSon = rightSon;
 	}
 	
-	public JPanel getParent(){
+	public void setParent(SplitPanel parent){
+		this.parent = parent;
+	}
+	
+	public SplitPanel getParent(){
 		return this.parent;
 	}
 	
-	public void split(){
-		leftSon = new PanelTree(parent);
-		rightSon = new PanelTree(new ChoosePanel());
+	public PanelTree getLeftSon(){
+		return this.leftSon;
 	}
+	
+	public PanelTree getRightSon(){
+		return this.rightSon;
+	}
+	
+	public void stop(){
+		parent.killThread();
+	}
+	
 	
 }

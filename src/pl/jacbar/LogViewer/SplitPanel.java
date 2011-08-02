@@ -19,17 +19,27 @@ public abstract class SplitPanel extends JPanel {
 	JPopupMenu menu = null;
 	JMenuItem vertical = null;
 	JMenuItem horizontal = null;
+	PanelTree node = null;
 	
 	public SplitPanel(){
 		super();
-		
+		node = new PanelTree(this);
 		menu = new JPopupMenu();
 		horizontal = new JMenuItem("Split horizontal");
-		horizontal.addActionListener(new SplitListener(this, JSplitPane.HORIZONTAL_SPLIT));
+		horizontal.addActionListener(new SplitListener(this, JSplitPane.HORIZONTAL_SPLIT, node));
 		vertical = new JMenuItem("Split vertical");
-		vertical.addActionListener(new SplitListener(this, JSplitPane.VERTICAL_SPLIT));
+		vertical.addActionListener(new SplitListener(this, JSplitPane.VERTICAL_SPLIT, node));
 		menu.add(horizontal);
 		menu.add(vertical);
+		
+	}
+	
+	public PanelTree getNode(){
+		return this.node;
+	}
+	
+	public void setNode(PanelTree node){
+		this.node = node;
 	}
 	
 	public abstract void killThread();
@@ -37,10 +47,12 @@ public abstract class SplitPanel extends JPanel {
 	private class SplitListener implements ActionListener{
 		private JPanel panel = null;
 		int split;
-				
-		SplitListener(JPanel panel, int split){
+		PanelTree node;
+		
+		SplitListener(JPanel panel, int split, PanelTree node){
 			this.panel = panel;
 			this.split = split;		
+			this.node = node;
 		}
 		
 		public void actionPerformed(ActionEvent e) {
@@ -55,12 +67,17 @@ public abstract class SplitPanel extends JPanel {
 			pane.setBorder(null);
 			pane.setDividerLocation(split== 0 ? panel.getHeight()/2 : panel.getWidth()/2);
 			pane.setResizeWeight(0.5);
-			ChoosePanel newChoosePanel = new ChoosePanel(); 
+			
+			ChoosePanel newChoosePanel = new ChoosePanel();
+			
+			node.setLeftSon(node);
+			node.setRightSon(newChoosePanel.getNode());
+			
 			pane.setLeftComponent(panel);
 			pane.setRightComponent(newChoosePanel);
 			
 			BasicSplitPaneUI splitPaneUI = (BasicSplitPaneUI)(pane.getUI());
-			splitPaneUI.getDivider().addMouseListener(new MergeListener(pane));
+			splitPaneUI.getDivider().addMouseListener(new MergeListener(pane, node));
 			parent.add(pane);
 			
 			parent.setComponentZOrder(pane,order);
@@ -73,11 +90,24 @@ public abstract class SplitPanel extends JPanel {
 	
 	}
 	
+	
+	public void stopThreads(PanelTree node){
+		if(node.getLeftSon() != null){
+			node.getLeftSon().stop();
+			stopThreads(node.getLeftSon());
+		}
+		if(node.getRightSon() != null){
+			node.getRightSon().stop();
+			stopThreads(node.getRightSon());
+		}
+	}
+	
 	private class MergeListener implements MouseListener {
 		JSplitPane pane = null;
-		
-		MergeListener(JSplitPane pane){
+		PanelTree node = null;
+		MergeListener(JSplitPane pane, PanelTree node){
 			this.pane = pane;
+			this.node = node;
 		}
 		
 		public void mouseReleased(MouseEvent e) {}
@@ -86,6 +116,8 @@ public abstract class SplitPanel extends JPanel {
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseClicked(MouseEvent e) {
 			if(e.getClickCount() == 2 && JOptionPane.showConfirmDialog(null, "Do you really want to merge content","Merge content",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE)==JOptionPane.OK_OPTION){
+				node.getRightSon().stop();
+				stopThreads(node.getRightSon());
 				pane.remove(2);
 				pane.setDividerSize(0);
 			}
