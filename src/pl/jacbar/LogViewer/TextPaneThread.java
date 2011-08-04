@@ -1,7 +1,11 @@
 package pl.jacbar.LogViewer;
 
+import java.awt.Component;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import javax.swing.ProgressMonitorInputStream;
 
 
 public class TextPaneThread implements Runnable {
@@ -10,12 +14,12 @@ public class TextPaneThread implements Runnable {
 	File file = null;
 	BufferedReader reader = null;
 	Boolean kill = false;
+	Component parent = null;
 	
-	public TextPaneThread(ColorPane pane, File file) {
+	public TextPaneThread(ColorPane pane, File file, Component parent) {
 		this.pane = pane;
 		this.file = file;
-		
-		
+		this.parent = parent;
 	}
 	
 	public void run() {	
@@ -26,30 +30,25 @@ public class TextPaneThread implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		
+
 		String line = "";
-		ArrayList<String> list = new ArrayList<String>();
-		try{
-			reader = new BufferedReader(new FileReader(file));
+		try {
+			long length = count(file.getPath()), i=0;;
+			InputStreamReader  in = new InputStreamReader(new ProgressMonitorInputStream(parent ,"Reading", new FileInputStream(file)));
+			reader = new BufferedReader(in);
 			line = reader.readLine();
 			while(line != null){
-				list.add(line);
 				line = reader.readLine();
+				i++;
+				if(i>(length - 100) && line != null)
+					pane.appendANSI(line+"\n");
 			}
 			
-		}catch (FileNotFoundException e){
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
 		
-		int begin = list.size() > 500 ? list.size()-500 : 0;
-		
-		for(int i=begin; i<list.size(); i++){
-			pane.appendANSI(list.get(i)+"\n");
-		}
-		list.clear();
-		list.trimToSize();
 		
 			while(!kill){
 				try{
@@ -66,27 +65,33 @@ public class TextPaneThread implements Runnable {
 							ei.printStackTrace();
 						}
 					}
+					try {
+						reader = new BufferedReader(new FileReader(file));
+					} catch (FileNotFoundException e1) {
+						e1.printStackTrace();
+					}
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 				}
 			}
 			
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		
-		
-			
-	
-	
 	public void killThread(){ 
 		kill = true;
 	}
 	
-	public int count(String filename) throws IOException {
+	public long count(String filename) throws IOException {
 	    InputStream is = new BufferedInputStream(new FileInputStream(filename));
 	    try {
 	        byte[] c = new byte[1024];
-	        int count = 0;
+	        long count = 0;
 	        int readChars = 0;
 	        while ((readChars = is.read(c)) != -1) {
 	            for (int i = 0; i < readChars; ++i) {

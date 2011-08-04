@@ -28,12 +28,14 @@ public class ColorPane extends JTextPane {
   
   private Boolean wordWrap;
   private int limit;
+  private int range;
   
   public ColorPane() {
 	super();
 	setBackground(Color.black);
 	wordWrap = true;
 	limit = 0;
+	range = 100;
   }
   
   public boolean getScrollableTracksViewportWidth(){
@@ -56,6 +58,7 @@ public class ColorPane extends JTextPane {
   
   public void rewrite(){
 	  String text = getText();
+	  setText("");
 	  appendANSI(text);
   }
   
@@ -77,7 +80,7 @@ public class ColorPane extends JTextPane {
     String addString = remaining + s;
     remaining = "";
     
-    if(limit <= 500)
+    if(limit <= range)
     	limit++;
     else{
     	try {

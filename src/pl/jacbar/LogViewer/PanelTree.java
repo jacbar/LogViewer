@@ -1,6 +1,5 @@
 package pl.jacbar.LogViewer;
 
-import javax.swing.JPanel;
 
 public class PanelTree {
 	SplitPanel parent = null;

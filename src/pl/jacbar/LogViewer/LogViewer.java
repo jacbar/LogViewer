@@ -25,7 +25,8 @@ public class LogViewer extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("LogViewer");
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		setSize(dim);
+		//setSize(dim);
+		setSize(500,500);
 		JSplitPane contentPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
 		contentPane.setDividerSize(0);
 		contentPane.setBorder(null);
