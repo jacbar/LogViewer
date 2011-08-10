@@ -2,8 +2,6 @@ package pl.jacbar.LogViewer;
 
 import java.awt.Component;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
 
 import javax.swing.ProgressMonitorInputStream;
 
@@ -49,6 +47,7 @@ public class TextPaneThread implements Runnable {
 			e2.printStackTrace();
 		}
 		
+		System.gc();
 		
 			while(!kill){
 				try{

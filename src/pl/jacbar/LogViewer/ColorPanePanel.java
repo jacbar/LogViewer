@@ -21,6 +21,7 @@ public class ColorPanePanel extends SplitPanel {
 	
 	public ColorPanePanel(String fileName) {
 		super();
+		node = new Node(this);
 		this.fileName = fileName;
 		setLayout(new GridLayout());
 		colorPane = new ColorPane();

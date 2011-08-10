@@ -19,11 +19,11 @@ public abstract class SplitPanel extends JPanel {
 	JPopupMenu menu = null;
 	JMenuItem vertical = null;
 	JMenuItem horizontal = null;
-	PanelTree node = null;
+	Node node = null;
 	
 	public SplitPanel(){
 		super();
-		node = new PanelTree(this);
+		node = new Node();
 		menu = new JPopupMenu();
 		horizontal = new JMenuItem("Split horizontal");
 		horizontal.addActionListener(new SplitListener(this, JSplitPane.HORIZONTAL_SPLIT, node));
@@ -34,22 +34,22 @@ public abstract class SplitPanel extends JPanel {
 		
 	}
 	
-	public PanelTree getNode(){
+	public Node getNode(){
 		return this.node;
 	}
 	
-	public void setNode(PanelTree node){
+	public void setNode(Node node){
 		this.node = node;
 	}
 	
 	public abstract void killThread();
 	
 	private class SplitListener implements ActionListener{
-		private JPanel panel = null;
+		private SplitPanel panel = null;
 		int split;
-		PanelTree node;
+		Node node;
 		
-		SplitListener(JPanel panel, int split, PanelTree node){
+		SplitListener(SplitPanel panel, int split, Node node){
 			this.panel = panel;
 			this.split = split;		
 			this.node = node;
@@ -70,9 +70,8 @@ public abstract class SplitPanel extends JPanel {
 			
 			ChoosePanel newChoosePanel = new ChoosePanel();
 			
-			node.setLeftSon(node);
-			node.setRightSon(newChoosePanel.getNode());
-			
+			node.addLeftChild(node);
+			node.addRightChild(newChoosePanel.getNode());
 			pane.setLeftComponent(panel);
 			pane.setRightComponent(newChoosePanel);
 			
@@ -91,21 +90,19 @@ public abstract class SplitPanel extends JPanel {
 	}
 	
 	
-	public void stopThreads(PanelTree node){
-		if(node.getLeftSon() != null){
-			node.getLeftSon().stop();
-			stopThreads(node.getLeftSon());
-		}
-		if(node.getRightSon() != null){
-			node.getRightSon().stop();
-			stopThreads(node.getRightSon());
+	public void stopThreads(Node node){
+		if(node.isLeaf()){
+			node.stop();
+		} else {
+			for(Node n : node.getChildren())
+				stopThreads(n);
 		}
 	}
 	
 	private class MergeListener implements MouseListener {
 		JSplitPane pane = null;
-		PanelTree node = null;
-		MergeListener(JSplitPane pane, PanelTree node){
+		Node node = null;
+		MergeListener(JSplitPane pane, Node node){
 			this.pane = pane;
 			this.node = node;
 		}
@@ -116,10 +113,10 @@ public abstract class SplitPanel extends JPanel {
 		public void mouseEntered(MouseEvent e) {}
 		public void mouseClicked(MouseEvent e) {
 			if(e.getClickCount() == 2 && JOptionPane.showConfirmDialog(null, "Do you really want to merge content","Merge content",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE)==JOptionPane.OK_OPTION){
-				node.getRightSon().stop();
-				stopThreads(node.getRightSon());
+				stopThreads(node.getRightChild());
 				pane.remove(2);
 				pane.setDividerSize(0);
+				System.gc();
 			}
 		}
 	}

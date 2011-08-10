@@ -12,11 +12,11 @@ import javax.swing.JSplitPane;
 public class ChoosePanel extends SplitPanel {
 
 	private OpenDialog dialog = null;
-	private PanelTree node;
+	
 	
 	public ChoosePanel() {
 		super();
-		node = new PanelTree(this);
+		node = new Node(this);
 		setLayout(new GridBagLayout());
 		JButton btn = new JButton("Choose file");
 		btn.addActionListener(new ActionListener() {
@@ -31,7 +31,7 @@ public class ChoosePanel extends SplitPanel {
 					pane.remove(panel);
 					
 					ColorPanePanel colorPane = new ColorPanePanel(dialog.getFileName());
-					panel.setNode(colorPane.getNode());
+					node.setData(colorPane);
 					pane.add(colorPane);
 					pane.setComponentZOrder(colorPane, order);
 					pane.setDividerLocation(parentDivider);
@@ -41,7 +41,6 @@ public class ChoosePanel extends SplitPanel {
 		
 		setComponentPopupMenu(menu);
 		add(btn);
-		node.setParent(this);
 	}
 	
 	
