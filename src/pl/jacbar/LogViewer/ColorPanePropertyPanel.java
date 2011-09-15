@@ -14,7 +14,7 @@ public class ColorPanePropertyPanel extends JPanel {
 	
 	private Boolean save = false;
 	private JDialog dialog = null;
-	private JComboBox fontBox = null;
+	private JComboBox<String> fontBox = null;
 	private JSpinner sizeSpinner = null;
 	private JCheckBox chckbxBold = null;
 	private JCheckBox chckbxItalic = null;
@@ -22,7 +22,7 @@ public class ColorPanePropertyPanel extends JPanel {
 	public ColorPanePropertyPanel() {
 		setLayout(null);
 		
-		fontBox = new JComboBox();
+		fontBox = new JComboBox<String>();
 		fontBox.setBounds(70, 32, 100, 20);
 		String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
 		for(String font : fontNames)

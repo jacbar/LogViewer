@@ -16,7 +16,7 @@ public class ChoosePanel extends SplitPanel {
 	
 	public ChoosePanel() {
 		super();
-		node = new Node(this);
+		node.setData(this);
 		setLayout(new GridBagLayout());
 		JButton btn = new JButton("Choose file");
 		btn.addActionListener(new ActionListener() {
@@ -46,7 +46,6 @@ public class ChoosePanel extends SplitPanel {
 	
 	
 	
-	public void killThread() {
-		
-	}
+	public void killThread() {}
+	
 }

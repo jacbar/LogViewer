@@ -14,14 +14,14 @@ import java.io.*;
 
 public class ColorPanePanel extends SplitPanel {
 
-	private ColorPane colorPane = null;
+	private static ColorPane colorPane = null;
 	private TextPaneThread textPaneThread = null;
 	private String fileName = null;
 	private ColorPanePropertyPanel dialog = null;
 	
 	public ColorPanePanel(String fileName) {
 		super();
-		node = new Node(this);
+		node.setData(this);
 		this.fileName = fileName;
 		setLayout(new GridLayout());
 		colorPane = new ColorPane();
@@ -43,6 +43,28 @@ public class ColorPanePanel extends SplitPanel {
 			}
 		});
 		menu.add(wrapMenu);
+		JMenuItem clearThis = new JMenuItem("Clear");
+		clearThis.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clearColorPane();
+				
+			}
+		});
+		menu.add(clearThis);
+		
+		JMenuItem clearAll = new JMenuItem("Clear all");
+		clearAll.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				clearColorPane();
+				
+			}
+		});
+		menu.add(clearAll);
+		
 		JMenuItem propertyItem = new JMenuItem("Properties");
 		propertyItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -59,11 +81,32 @@ public class ColorPanePanel extends SplitPanel {
 		
 		add(scrollPane);
 	}
-
+	
+	public String getFileName(){
+		return this.fileName;
+	}
+	
+	public Boolean getWordWrap(){
+		return this.colorPane.getWordWrap();
+	}
+	
+	public Font getColorPaneFont(){
+		return this.colorPane.getFont();
+	}
 	
 	public void killThread() {
 		textPaneThread.killThread();
 	}
 	
+	public void setColorPaneFont(Font font){
+		colorPane.setFont(font);
+	}
 	
+	public static void clearAllColorPane(){
+		colorPane.clearColorPane();
+	}
+	
+	public void clearColorPane(){
+		colorPane.clearColorPane();
+	}
 }

@@ -43,6 +43,7 @@ public abstract class SplitPanel extends JPanel {
 	}
 	
 	public abstract void killThread();
+
 	
 	private class SplitListener implements ActionListener{
 		private SplitPanel panel = null;
@@ -70,7 +71,7 @@ public abstract class SplitPanel extends JPanel {
 			
 			ChoosePanel newChoosePanel = new ChoosePanel();
 			
-			node.addLeftChild(node);
+			node.addLeftChild(new Node(panel));
 			node.addRightChild(newChoosePanel.getNode());
 			pane.setLeftComponent(panel);
 			pane.setRightComponent(newChoosePanel);
@@ -94,11 +95,11 @@ public abstract class SplitPanel extends JPanel {
 		if(node.isLeaf()){
 			node.stop();
 		} else {
-			for(Node n : node.getChildren())
-				stopThreads(n);
+			stopThreads(node.getLeftChild());
+			stopThreads(node.getRightChild());
 		}
 	}
-	
+		
 	private class MergeListener implements MouseListener {
 		JSplitPane pane = null;
 		Node node = null;

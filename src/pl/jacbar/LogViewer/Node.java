@@ -1,28 +1,27 @@
 package pl.jacbar.LogViewer;
 
-import java.util.LinkedList;
+
 
 public class Node {	
 	private SplitPanel data = null;
 	private Node parent = null;
-	private LinkedList<Node> children = null;
+	private Node leftChild = null;
+	private Node rightChild = null;
+	
 	
 	public Node() {
 		parent = null;
-		children = new LinkedList<Node>();
 		data = null;
 	}
 	
 	public Node(SplitPanel data) {
 		parent = null;
-		children = new LinkedList<Node>();
-		this.data = data;
+		this.data = data;	
 	}
 	
 	public Node(SplitPanel data, Node parent) {
 		this.data = data;
 		this.parent = parent;
-		children = new LinkedList<Node>();
 	}
 	
 	public Node getParent(){
@@ -42,35 +41,30 @@ public class Node {
 	}
 	
 	public boolean isLeaf(){
-		return this.children.isEmpty();
+		return (leftChild == null && rightChild == null) ? true : false;
 	}
 	
 	public Node addLeftChild(Node child){
-		child.setParent(this);
-		children.add(child);
+		this.leftChild = child;
 		return child;
 	}
 	
 	public Node addRightChild(Node child){
-		child.setParent(this);
-		children.add(child);
+		this.rightChild = child;
 		return child;
 	}
 	
-	public LinkedList<Node> getChildren(){
-		return this.children;
-	}
 	
 	public Node getLeftChild(){
-		return this.children.get(0);
+		return this.leftChild;
 	}
 	
 	public Node getRightChild(){
-		return this.children.get(1);
+		return this.rightChild;
 	}
 	
 	public void stop(){
 		data.killThread();
 	}
-	
+
 }

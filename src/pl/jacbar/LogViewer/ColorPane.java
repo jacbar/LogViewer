@@ -165,4 +165,11 @@ public class ColorPane extends JTextPane {
     else if (ANSIColor.equals("\u001B[0m")) { return cReset; }
     else { return B_White; }
   }
+  
+  public void clearColorPane(){
+	  setText("");
+	  this.limit = 0;
+  }
+  
+ 
 }
